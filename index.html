@@ -1,0 +1,831 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>栃木SC2026/27 選手一覧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --yellow:#FFD400; --yellow-dk:#E6BF00;
+    --navy:#0067C0; --navy-2:#0556A8; --ink:#11151C;
+    --paper:#F4F6FA; --card:#FFFFFF; --line:#E2E6EE; --muted:#6B7385;
+    --gk:#F5832B; --df:#28A745; --mf:#2D7DD2; --fw:#E33B3B;
+    --shadow:0 1px 2px rgba(10,26,63,.06),0 8px 24px rgba(10,26,63,.08);
+    --disp:'Oswald',sans-serif; --body:'Noto Sans JP',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--body);background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit}
+  a{color:inherit}
+
+  /* ---------- Header ---------- */
+  header.app{position:sticky;top:0;z-index:40;background:var(--navy);color:#fff}
+  .bar{max-width:1080px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
+  .logo{flex:0 0 auto;width:48px;height:48px;border-radius:11px;background:
+        linear-gradient(135deg,var(--yellow),var(--yellow-dk));
+        display:grid;place-items:center;position:relative;user-select:none;-webkit-user-select:none;
+        box-shadow:inset 0 0 0 2px rgba(10,26,63,.18);touch-action:none}
+  .logo b{font-family:var(--disp);font-weight:700;color:var(--navy);font-size:13px;line-height:.95;text-align:center;letter-spacing:.3px}
+  .logo .ring{position:absolute;inset:-4px;border-radius:14px;border:2px solid var(--yellow);opacity:0;transition:opacity .2s}
+  .logo.holding .ring{opacity:1;animation:pulse 1.2s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .titles{flex:1 1 auto;min-width:0}
+  .titles .kicker{font-family:var(--disp);font-weight:600;letter-spacing:.18em;font-size:11px;color:var(--yellow);text-transform:uppercase}
+  .titles h1{margin:0;font-size:clamp(17px,4.4vw,23px);font-weight:900;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .adminflag{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--navy);background:var(--yellow);padding:5px 9px;border-radius:999px;display:none}
+  .adminflag.on{display:inline-block}
+
+  /* ---------- Controls row ---------- */
+  .controls{max-width:1080px;margin:0 auto;padding:12px 18px 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+  .seg button{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:13.5px;padding:8px 16px;border-radius:999px;transition:.15s}
+  .seg button.active{background:var(--navy);color:#fff}
+  .spacer{flex:1 1 auto}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--navy);font-weight:700;font-size:13.5px;padding:9px 14px;border-radius:10px;box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:7px}
+  .btn.primary{background:var(--yellow);border-color:var(--yellow-dk);color:var(--navy)}
+  .btn.ghost{background:transparent;box-shadow:none;border-color:transparent;color:rgba(255,255,255,.85)}
+  .btn.attn{background:var(--yellow);border-color:var(--yellow-dk);color:var(--navy);position:relative}
+  .btn.attn::after{content:"";position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#E3261F;box-shadow:0 0 0 2px var(--navy)}
+  .adminbtns{display:none;gap:10px}
+  .adminbtns.on{display:inline-flex}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1080px;margin:0 auto;padding:16px 18px 80px}
+  .count{font-size:12.5px;color:var(--muted);margin:4px 2px 14px}
+
+  /* Accordion */
+  .acc{margin-bottom:14px;border-radius:16px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--line)}
+  .acc-head{width:100%;display:flex;align-items:center;gap:12px;padding:15px 18px;border:0;background:transparent;text-align:left}
+  .pos-chip{font-family:var(--disp);font-weight:700;font-size:14px;color:#fff;width:46px;height:30px;border-radius:8px;display:grid;place-items:center;letter-spacing:.04em}
+  .acc-head .nm{font-weight:900;font-size:16px;letter-spacing:.02em}
+  .acc-head .ct{color:var(--muted);font-weight:700;font-size:12.5px}
+  .acc-head .caret{margin-left:auto;font-size:13px;color:var(--muted);transition:transform .25s;font-family:var(--disp)}
+  .acc.open .caret{transform:rotate(180deg)}
+  .acc-body{display:none;padding:6px 14px 18px}
+  .acc.open .acc-body{display:block}
+
+  /* Grid of player cards: up to 5 across */
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .flat{padding:2px}
+  @media(max-width:860px){.grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+
+  .pcard{position:relative;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column}
+  .pcard .photo{position:relative;width:100%;aspect-ratio:3/4;border-radius:13px;overflow:hidden;background:linear-gradient(160deg,#dfe4ee,#eef1f6);box-shadow:var(--shadow)}
+  .pcard .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .pcard .photo .silh{position:absolute;inset:0;display:grid;place-items:center;color:#b9c0d0;font-size:40px}
+  .pcard .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(10,26,63,.55),transparent 42%)}
+  .pcard .num{position:absolute;left:9px;bottom:7px;z-index:2;font-family:var(--disp);font-weight:700;color:var(--yellow);font-size:30px;line-height:.9;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+  .pcard .tl{position:absolute;top:8px;left:8px;z-index:2;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .tag{font-family:var(--disp);font-weight:700;color:#fff;font-size:11px;padding:3px 7px;border-radius:6px;letter-spacing:.04em;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+  .newtag{background:#E3261F;color:#fff;font-family:var(--disp);font-weight:700;font-size:11px;padding:3px 8px;border-radius:6px;letter-spacing:.08em;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .pcard .ttag{position:absolute;right:8px;bottom:8px;z-index:2;width:23px;height:23px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+  .pcard .meta{padding:7px 3px 2px}
+  .pcard .meta .nme{font-weight:700;font-size:13.5px;line-height:1.25}
+  .pcard .meta .fg{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .pcard .del{position:absolute;top:6px;right:6px;z-index:3;width:26px;height:26px;border-radius:50%;border:0;background:rgba(227,59,59,.95);color:#fff;font-size:15px;line-height:1;display:none;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  body.admin .pcard .del{display:grid}
+  .pcard:focus-visible .photo,.pcard:hover .photo{outline:2px solid var(--navy);outline-offset:2px}
+
+  .empty{padding:40px 16px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:16px;background:#fff}
+  .empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:5px}
+
+  /* ---------- Overlays ---------- */
+  .scrim{position:fixed;inset:0;z-index:60;background:rgba(8,14,30,.55);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:0}
+  .scrim.show{display:flex}
+  .sheet{width:100%;max-width:720px;background:var(--paper);min-height:100%}
+  @media(min-width:760px){.sheet{margin:34px 0;min-height:auto;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(8,14,30,.4)}}
+
+  /* Profile */
+  .pf-hero{position:relative;background:var(--navy);color:#fff;padding:0}
+  .pf-top{display:flex;align-items:center;gap:10px;padding:13px 16px}
+  .pf-top .x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:20px}
+  .pf-top .ed{border:0;background:var(--yellow);color:var(--navy);font-weight:700;font-size:13px;padding:8px 13px;border-radius:9px;display:none}
+  body.admin .pf-top .ed{display:inline-block}
+  .pf-id{display:flex;gap:16px;padding:4px 18px 20px;align-items:center;flex-wrap:wrap}
+  .pf-gallery{flex:0 0 auto;width:150px}
+  .pf-main{position:relative;width:150px;height:188px;border-radius:13px;overflow:hidden;background:#1456a0;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .pf-main .newtag{position:absolute;top:7px;left:7px;z-index:3}
+  .checkrow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:13px 14px;cursor:pointer;font-weight:700;font-size:14px;color:var(--ink)}
+  .checkrow input{width:20px;height:20px;accent-color:#E3261F;flex:0 0 auto}
+  .checkrow .nt{background:#E3261F;color:#fff;font-family:var(--disp);font-weight:700;font-size:10px;padding:2px 6px;border-radius:5px;letter-spacing:.06em}
+  .trans-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .trans-chip{border:1px solid var(--line);background:#fff;color:var(--muted);font-weight:700;font-size:13px;padding:9px 14px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+  .trans-chip::before{content:"";width:14px;height:14px;border:2px solid var(--line);border-radius:50%;display:inline-block}
+  .trans-chip.on::before{border-color:#fff;background:radial-gradient(circle,#fff 40%,transparent 45%)}
+  .pf-main img{width:100%;height:100%;object-fit:cover}
+  .pf-main .silh{width:100%;height:100%;display:grid;place-items:center;color:#7fa9d8;font-size:46px}
+  .pf-thumbs{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+  .pf-thumb{width:33px;height:33px;border-radius:7px;overflow:hidden;border:2px solid transparent;padding:0;background:#1456a0;cursor:pointer}
+  .pf-thumb img{width:100%;height:100%;object-fit:cover}
+  .pf-thumb.active{border-color:var(--yellow)}
+  .pf-head{flex:1 1 200px;min-width:160px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+  .pf-row1{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+  .pf-head .pfpos{display:inline-block;font-family:var(--disp);font-weight:700;font-size:12px;color:#fff;padding:3px 9px;border-radius:6px;letter-spacing:.05em}
+  .pf-head .pfnum{font-family:var(--disp);font-weight:700;color:var(--yellow);font-size:40px;line-height:.85}
+  .pf-nm{display:flex;flex-direction:column;justify-content:center;gap:3px}
+  .pf-head .pfname{font-size:22px;font-weight:900;line-height:1.05}
+  .pf-head .pffg{font-size:13.5px;color:rgba(255,255,255,.78);line-height:1.05}
+  .pf-trans{display:inline-block;font-size:11px;font-weight:800;color:#fff;padding:4px 10px;border-radius:7px;letter-spacing:.04em}
+
+  .pf-body{padding:18px 18px 60px}
+  .sect{margin:0 0 18px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .sect h3{margin:0;padding:11px 15px;font-size:12px;letter-spacing:.12em;color:var(--navy);background:#fbfcfe;border-bottom:1px solid var(--line);font-weight:900}
+  .rows{padding:4px 15px 10px}
+  .row{display:flex;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .k{flex:0 0 92px;color:var(--muted);font-size:12.5px;font-weight:700;padding-top:1px}
+  .row .v{flex:1 1 auto;font-size:14px;white-space:pre-wrap;word-break:break-word}
+  .row .v.empty-v{color:#aab1c2}
+  .sns{display:flex;gap:10px;flex-wrap:wrap;padding:13px 15px}
+  .sns a{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;text-decoration:none;padding:9px 13px;border-radius:10px;border:1px solid var(--line);background:#fff}
+  .sns a .ic{width:18px;height:18px;display:grid;place-items:center;border-radius:5px;color:#fff;font-size:11px;font-weight:900;font-family:var(--disp)}
+  .sns a.ig .ic{background:#E1306C}.sns a.x .ic{background:#111}.sns a.yt .ic{background:#FF0000}
+  .sns .none{color:#aab1c2;font-size:13px}
+
+  /* Edit form */
+  .form{padding:16px 16px 70px;background:var(--paper)}
+  .form .ftop{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .form .ftop h2{margin:0;font-size:18px;font-weight:900}
+  .form .ftop .x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:0;background:#fff;border:1px solid var(--line);font-size:20px}
+  .fg{margin-bottom:13px}
+  .fg label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:5px}
+  .fg input,.fg select,.fg textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 12px;font-size:14.5px;color:var(--ink)}
+  .fg textarea{min-height:84px;resize:vertical;line-height:1.5}
+  .fg input:focus,.fg select:focus,.fg textarea:focus{outline:2px solid var(--navy);outline-offset:0;border-color:var(--navy)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  @media(max-width:520px){.grid2{grid-template-columns:1fr 1fr}}
+  .photogrid{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+  .ph-empty{color:#aab1c2;font-size:13px;padding:18px 0}
+  .ph-slot{position:relative;width:84px;height:106px;border-radius:11px;overflow:hidden;background:#e7ebf3;box-shadow:var(--shadow)}
+  .ph-slot img{width:100%;height:100%;object-fit:cover}
+  .ph-slot .ph-main{position:absolute;left:0;bottom:0;right:0;background:var(--yellow);color:var(--navy);font-size:10px;font-weight:800;text-align:center;padding:2px}
+  .ph-slot .ph-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(227,59,59,.95);color:#fff;font-size:14px;line-height:1;display:grid;place-items:center}
+  .ph-slot .ph-star{position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#FFD400;font-size:12px;display:grid;place-items:center}
+  .photo-add{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .photo-add #urladd{flex:1 1 160px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .filebtn{display:inline-block;text-align:center;border:1px dashed var(--navy);color:var(--navy);background:#fff;font-weight:700;font-size:13px;padding:10px 14px;border-radius:10px}
+  .save-bar{position:sticky;bottom:0;left:0;right:0;display:flex;gap:10px;padding:12px 16px;background:linear-gradient(to top,var(--paper) 70%,transparent);margin:0 -16px -70px}
+  .save-bar .btn{flex:1 1 auto;justify-content:center;padding:13px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+
+  /* Bulk paste */
+  .bulk{border:1px solid var(--navy);background:#fff;border-radius:12px;margin-bottom:16px;overflow:hidden}
+  .bulk-toggle{width:100%;text-align:left;border:0;background:var(--navy);color:#fff;padding:12px 14px;font-weight:800;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .bulk-toggle .car{margin-left:auto;transition:transform .2s}
+  .bulk.collapsed .bulk-toggle .car{transform:rotate(-90deg)}
+  .bulk-body{padding:12px 14px}
+  .bulk.collapsed .bulk-body{display:none}
+  .bulk textarea{width:100%;min-height:150px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:13.5px;line-height:1.65;resize:vertical;font-family:var(--body);color:var(--ink)}
+  .bulk textarea:focus{outline:2px solid var(--navy);border-color:var(--navy)}
+  .bulk-actions{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
+  .btn.small{padding:9px 13px;font-size:13px}
+
+  /* Password mini-modal */
+  .pwwrap{position:fixed;inset:0;z-index:80;background:rgba(8,14,30,.5);display:none;align-items:center;justify-content:center;padding:24px}
+  .pwwrap.show{display:flex}
+  .pwbox{width:100%;max-width:320px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 30px 80px rgba(8,14,30,.4)}
+  .pwbox h3{margin:0 0 4px;font-size:16px;font-weight:900}
+  .pwbox p{margin:0 0 13px;font-size:12.5px;color:var(--muted)}
+  .pwbox input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:16px;letter-spacing:.12em;text-align:center}
+  .pwbox .pwbtns{display:flex;gap:9px;margin-top:13px}
+  .pwbox .pwbtns .btn{flex:1;justify-content:center}
+  .pwerr{color:var(--fw);font-size:12px;font-weight:700;margin-top:8px;min-height:16px}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);z-index:90;background:var(--navy);color:#fff;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:999px;box-shadow:0 12px 30px rgba(8,14,30,.4);opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .loading{padding:60px 0;text-align:center;color:var(--muted);font-weight:700}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="app">
+  <div class="bar">
+    <div class="logo" id="logo" title="ロゴ"><span class="ring"></span><b>栃木<br>SC</b></div>
+    <div class="titles">
+      <div class="kicker">TOCHIGI SC 2026/27</div>
+      <h1>栃木SC2026/27 選手一覧</h1>
+    </div>
+    <span class="adminflag" id="adminflag">管理モード</span>
+  </div>
+  <div class="controls">
+    <div class="seg" id="seg">
+      <button data-view="position" class="active">ポジション順</button>
+      <button data-view="number">背番号順</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="adminbtns" id="adminbtns">
+      <button class="btn primary" id="addBtn">＋ 選手を追加</button>
+      <button class="btn" id="exportBtn">⤓ データを書き出す</button>
+      <button class="btn" id="loadOfficialBtn">公式名簿を読み込む</button>
+      <button class="btn" id="discardBtn">編集を破棄</button>
+      <button class="btn ghost" id="lockBtn">ロック</button>
+    </span>
+  </div>
+</header>
+
+<main>
+  <div class="count" id="count"></div>
+  <div id="board"><div class="loading">読み込み中…</div></div>
+</main>
+
+<!-- Profile / Edit overlay -->
+<div class="scrim" id="scrim"><div class="sheet" id="sheet"></div></div>
+
+<!-- Password modal -->
+<div class="pwwrap" id="pwwrap">
+  <div class="pwbox">
+    <h3>管理モード</h3>
+    <p>パスワードを入力してください</p>
+    <input id="pwinput" type="password" inputmode="text" autocomplete="off" placeholder="••••••••">
+    <div class="pwerr" id="pwerr"></div>
+    <div class="pwbtns">
+      <button class="btn" id="pwcancel">キャンセル</button>
+      <button class="btn primary" id="pwok">解除する</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="roster-data.js"></script>
+<script>
+const PASSWORD = "2026KKAZ";
+const LS_KEY = "tochigi_roster_local"; // 管理者の編集をこのブラウザに一時保存
+let dirty = false;
+const POS = ["GK","DF","MF","FW"];
+const POS_NAME = {GK:"ゴールキーパー",DF:"ディフェンダー",MF:"ミッドフィルダー",FW:"フォワード"};
+const POS_VAR = {GK:"var(--gk)",DF:"var(--df)",MF:"var(--mf)",FW:"var(--fw)"};
+const TRANSFER = {
+  "完全移籍":{ab:"完", color:"#2D7DD2", label:"完全移籍"},
+  "期限付き":{ab:"期", color:"#F5832B", label:"期限付き移籍"},
+  "育成型":{ab:"育", color:"#28A745", label:"育成型期限付き移籍"},
+};
+const TRANSFER_KEYS = ["完全移籍","期限付き","育成型"];
+const numDisp = n => (n===0 || n==="" || n==null || Number.isNaN(Number(n))) ? "00" : n;
+
+/* ---------- bulk paste ---------- */
+const BULK_TEMPLATE = [
+  "背番号: ","名前: ","ふりがな: ","あだ名: ","ポジション: ","生年月日: ",
+  "身長: ","体重: ","出身地: ","利き足: ","好きなもの: ","好きな言葉: ",
+  "休日の過ごし方: ","Instagram: ","X: ","YouTube: ","経歴: "
+].join("\n");
+const FIELD_ALIASES = {
+  "背番号":"number","番号":"number","no":"number","ナンバー":"number","#":"number","＃":"number","number":"number",
+  "名前":"name","氏名":"name","選手名":"name","name":"name",
+  "ふりがな":"furigana","フリガナ":"furigana","読み":"furigana","よみ":"furigana","かな":"furigana","furigana":"furigana",
+  "ポジション":"position","position":"position","pos":"position",
+  "あだ名":"nickname","ニックネーム":"nickname","愛称":"nickname","nickname":"nickname",
+  "新加入":"newcomer","新加入選手":"newcomer","new":"newcomer","newcomer":"newcomer",
+  "移籍区分":"transfer","移籍":"transfer","区分":"transfer","transfer":"transfer",
+  "出身地":"hometown","出身":"hometown","hometown":"hometown",
+  "生年月日":"birthday","誕生日":"birthday","生年":"birthday","birthday":"birthday","dob":"birthday",
+  "身長":"height","height":"height","体重":"weight","weight":"weight",
+  "利き足":"foot","利足":"foot","きき足":"foot","foot":"foot",
+  "好きなもの":"favorite","好物":"favorite","好きな食べ物":"favorite","favorite":"favorite",
+  "好きな言葉":"motto","座右の銘":"motto","モットー":"motto","motto":"motto",
+  "休日の過ごし方":"holiday","休日":"holiday","オフの過ごし方":"holiday","オフ":"holiday","holiday":"holiday",
+  "instagram":"instagram","インスタ":"instagram","インスタグラム":"instagram","ig":"instagram",
+  "x":"x","twitter":"x","ツイッター":"x","エックス":"x",
+  "youtube":"youtube","ユーチューブ":"youtube","yt":"youtube",
+  "経歴":"career","キャリア":"career","前所属チーム経歴":"career",
+  "写真":"photo","画像":"photo","photo":"photo","写真url":"photo","画像url":"photo",
+};
+function normLabel(s){
+  return s.trim().toLowerCase()
+    .replace(/[\s　]/g,"").replace(/[・･／/\-‐－—.．]/g,"");
+}
+function splitLabel(line){
+  let idx=-1, len=1;
+  const m = line.match(/[：:\t　]/);
+  if(m){ idx=line.indexOf(m[0]); len=m[0].length; }
+  else { const m2=line.match(/ {2,}/); if(m2){ idx=m2.index; len=m2[0].length; } }
+  if(idx<0) return null;
+  return { label:line.slice(0,idx).trim(), value:line.slice(idx+len).trim() };
+}
+function parsePos(v){
+  const t=(v||"").toUpperCase();
+  if(/GK|ゴールキーパー|キーパー/.test(t)) return "GK";
+  if(/DF|ディフェンダー|ディフェ|守備/.test(t)) return "DF";
+  if(/MF|ミッドフィルダー|ミッド/.test(t)) return "MF";
+  if(/FW|フォワード|forward/i.test(t)) return "FW";
+  return null;
+}
+function parseBulk(text){
+  const lines = text.replace(/\r/g,"").split("\n");
+  const out = {}; let last=null;
+  for(const raw of lines){
+    const line = raw.replace(/\s+$/,"");
+    if(line.trim()===""){ continue; }
+    const sp = splitLabel(line);
+    let field=null;
+    if(sp){ field = FIELD_ALIASES[normLabel(sp.label)]||null; }
+    if(field){ out[field]=sp.value; last=field; }
+    else if(last){ out[last] = (out[last]?out[last]+"\n":"") + line.trim(); }
+  }
+  return out;
+}
+function applyBulk(){
+  const text = $("#bulkText").value;
+  if(!text.trim()){ toast("貼り付けるテキストがありません"); return; }
+  const d = parseBulk(text); let n=0;
+  const set=(id,v)=>{ if(v!==undefined && v!==""){ const el=$("#f_"+id); if(el){ el.value=v; n++; } } };
+  if(d.number!==undefined){ const m=(d.number.match(/\d+/)||[])[0]; if(m){ $("#f_number").value=m; n++; } }
+  if(d.position){ const p=parsePos(d.position); if(p){ $("#f_position").value=p; n++; } }
+  if(d.newcomer!==undefined){ const on=/^(はい|yes|true|on|1|○|◯|✓|☑|有|あり|new|新加入)$/i.test(d.newcomer.trim()); $("#f_newcomer").checked=on; n++; }
+  if(d.transfer){
+    const v=d.transfer; let k="";
+    if(/完全/.test(v)) k="完全移籍"; else if(/育成/.test(v)) k="育成型"; else if(/期限/.test(v)) k="期限付き";
+    if(k){ formTransfer=k; const cg=$("#transChips"); if(cg) cg.querySelectorAll(".trans-chip").forEach(ch=>{const on=ch.dataset.transfer===k; ch.classList.toggle("on",on); ch.style.cssText=on?`background:${TRANSFER[k].color};border-color:transparent;color:#fff`:"";}); n++; }
+  }
+  ["name","furigana","nickname","hometown","birthday","height","weight","foot","favorite","motto","holiday","instagram","x","youtube","career"].forEach(k=>set(k,d[k]));
+  if(d.photo && formPhotos.length<4){ formPhotos.push(d.photo); renderPhotoGrid(); n++; }
+  toast(n>0?`自動入力しました（${n}項目）。確認して保存してください`:"対応する項目が見つかりませんでした");
+}
+
+let players = [];
+let view = "position";
+let admin = false;
+let openAcc = {GK:true,DF:true,MF:true,FW:true};
+let formPhotos = [];
+let formTransfer = "";
+
+const $ = s => document.querySelector(s);
+const board = $("#board"), scrim = $("#scrim"), sheet = $("#sheet");
+const uid = () => "p_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc = s => (s??"").toString().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- storage ---------- */
+/* ---------- data layer (static / GitHub Pages) ----------
+   公開サイトは roster-data.js (window.ROSTER_DATA) を読み込みます。
+   管理者の編集はこのブラウザ(localStorage)に一時保存され、
+   「データを書き出す」で roster-data.js をダウンロードできます。
+   そのファイルをGitHubに差し替えてコミットすると公開内容が更新されます。 */
+function normalizePlayer(p){
+  if(!Array.isArray(p.photos)) p.photos = p.photo ? [p.photo] : (p.thumb ? [p.thumb] : []);
+  return p;
+}
+function load(){
+  let data = null;
+  try{ const ls = localStorage.getItem(LS_KEY); if(ls){ const o=JSON.parse(ls); if(o && Array.isArray(o.players)) data=o.players; } }catch(_){}
+  if(!data){
+    if(window.ROSTER_DATA && Array.isArray(window.ROSTER_DATA.players)) data = window.ROSTER_DATA.players;
+    else data = seed();
+  }
+  players = data.map(normalizePlayer);
+  render();
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({players, savedAt:new Date().toISOString()})); }catch(_){}
+  dirty = true; updateDirty();
+}
+function updateDirty(){ const b=$("#exportBtn"); if(b) b.classList.toggle("attn", dirty); }
+async function loadPhotos(id){
+  const p = players.find(x=>x.id===id);
+  return (p && Array.isArray(p.photos)) ? p.photos.slice() : [];
+}
+function exportData(){
+  const payload = "/* 栃木SC2026/27 選手データ — アプリの「データを書き出す」で生成。GitHubのroster-data.jsをこれで丸ごと置き換えてください。 */\n"
+    + "window.ROSTER_DATA = " + JSON.stringify({players, savedAt:new Date().toISOString()}) + ";\n";
+  const blob = new Blob([payload], {type:"application/javascript"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download="roster-data.js";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  dirty=false; updateDirty();
+  toast("roster-data.js を書き出しました。GitHubで差し替えてください");
+}
+function discardLocal(){
+  if(!confirm("このブラウザの編集内容を破棄して、公開中のデータに戻します。よろしいですか？")) return;
+  try{ localStorage.removeItem(LS_KEY); }catch(_){}
+  dirty=false; load(); toast("編集を破棄しました");
+}
+/* keep some quality but auto-compress */
+function shrinkDataURL(src, maxW, q){
+  return new Promise(res=>{
+    const im = new Image();
+    im.onload = ()=>{
+      const s = Math.min(1, maxW/im.width);
+      const w = Math.round(im.width*s), h = Math.round(im.height*s);
+      const c = document.createElement("canvas"); c.width=w; c.height=h;
+      c.getContext("2d").drawImage(im,0,0,w,h);
+      try{ res(c.toDataURL("image/jpeg",q)); }catch(_){ res(src); }
+    };
+    im.onerror = ()=>res(src); im.src = src;
+  });
+}
+async function makeThumb(src){
+  if(!src) return "";
+  if(!src.startsWith("data:")) return src; // remote URL: let <img> scale it
+  return await shrinkDataURL(src, 360, 0.72);
+}
+function officialRoster(){
+  // 出典: 栃木SC公式 2026選手紹介ページ（背番号・氏名・ふりがな・ポジション・生年月日・身長/体重・出身地・大切にしている言葉=好きな言葉・Instagram）
+  const D = [
+    [1,"川田 修平","かわた しゅうへい","GK","1994-04-05","189cm","82kg","埼玉県","切り拓く",""],
+    [21,"櫻庭 立樹","さくらば りき","GK","1999-10-13","192cm","87kg","北海道","応援される選手になる","https://www.instagram.com/sakurabariki/"],
+    [31,"鹿野 修平","しかの しゅうへい","GK","1999-08-27","183cm","77kg","東京都","人生は選択肢の連続","https://www.instagram.com/shuhei3117/"],
+    [71,"猪越 優惟","いのこし ゆい","GK","2001-05-26","185cm","81kg","宮城県","謙虚におごらず","https://www.instagram.com/inokoshi_ue/"],
+    [5,"柳 育崇","やなぎ やすたか","DF","1994-06-22","188cm","94kg","千葉県","困難の大きさは可能性の大きさに等しい","https://www.instagram.com/yana0622/"],
+    [6,"阿部 海斗","あべ かいと","DF","1999-06-18","175cm","70kg","福岡県","らしくあれ",""],
+    [14,"鈴木 俊也","すずき しゅんや","DF","2000-11-24","178cm","73kg","静岡県","初志貫徹","https://www.instagram.com/shunya.38/"],
+    [24,"田端 琉聖","たばた りゅうせい","DF","2003-05-11","187cm","78kg","静岡県","塵も積もれば山となる","https://www.instagram.com/ryusei_tabata/"],
+    [25,"岩﨑 博","いわさき ひろし","DF","2002-10-11","186cm","82kg","山梨県","勝つまでやるから負けない","https://www.instagram.com/hrsu_1011/"],
+    [26,"田畑 知起","たばた ともき","DF","2004-02-26","182cm","75kg","愛媛県","謙虚に真摯にひたむきに","https://www.instagram.com/tomoki2.26/"],
+    [37,"木邨 優人","きむら ゆうと","DF","2002-09-16","184cm","75kg","大阪府","自分次第","https://www.instagram.com/yuto3767/"],
+    [88,"内田 航平","うちだ こうへい","DF","1993-05-19","175cm","74kg","埼玉県","チャンスの後はピンチ",""],
+    [4,"佐藤 祥","さとう しょう","MF","1993-07-22","174cm","71kg","千葉県","成せばなる","https://www.instagram.com/satosho_93/"],
+    [10,"五十嵐 太陽","いがらし たいよう","MF","2003-04-14","172cm","60kg","神奈川県","","https://www.instagram.com/taiyooooo_0414/"],
+    [11,"青島 太一","あおしま たいち","MF","2001-04-17","170cm","63kg","静岡県","勇猛果敢","https://www.instagram.com/ta1__ao/"],
+    [13,"大曽根 広汰","おおそね こうた","MF","1999-08-17","167cm","64kg","東京都","継続","https://www.instagram.com/kota_osone_0817/"],
+    [15,"堤 陽輝","つつみ はるき","MF","2003-06-13","180cm","75kg","福岡県","継続は力なり","https://www.instagram.com/_haruki_62/"],
+    [17,"杉森 考起","すぎもり こうき","MF","1997-04-05","174cm","67kg","愛知県","成長","https://www.instagram.com/koki__sugimori/"],
+    [27,"永井 大士","ながい たいし","MF","2004-01-01","170cm","68kg","神奈川県","人生一度きり","https://www.instagram.com/taishi.0101/"],
+    [39,"屋宜 和真","やぎ かずま","MF","2002-12-10","167cm","60kg","北海道","コツコツが勝つコツ","https://www.instagram.com/kazu.yagi1210/"],
+    [40,"食野 壮磨","めしの そうま","MF","2001-05-20","167cm","63kg","大阪府","成長","https://www.instagram.com/sum_msn0520/"],
+    [47,"吉野 陽翔","よしの はると","MF","2002-08-14","181cm","76kg","栃木県宇都宮市","努力なくして勝利はない","https://www.instagram.com/haruto_yoshino/"],
+    [81,"中野 克哉","なかの かつや","MF","1996-09-13","168cm","64kg","奈良県","継続は力なり","https://www.instagram.com/siwatai/"],
+    [7,"川名 連介","かわな れんのすけ","FW","2002-02-18","170cm","68kg","神奈川県","","https://www.instagram.com/k_rennosuke218/"],
+    [9,"近藤 慶一","こんどう よしひと","FW","2002-03-03","181cm","82kg","岐阜県","質実剛健","https://www.instagram.com/konyoshi_9/"],
+    [19,"庄司 朗","しょうじ ほがら","FW","2002-10-10","187cm","79kg","千葉県","人事を尽くして天命を待つ","https://www.instagram.com/ho_gagaga/"],
+    [29,"矢野 貴章","やの きしょう","FW","1984-04-05","187cm","78kg","静岡県","全てが経験","https://www.instagram.com/kishoyano/"],
+    [77,"西野 太陽","にしの たいよう","FW","2002-08-10","180cm","70kg","徳島県","二兎追わなければ二兎は得られない","https://www.instagram.com/taiyoonishino/"],
+    [80,"オタボー ケネス","おたぼー けねす","FW","2002-05-13","178cm","67kg","ナイジェリア","感謝",""],
+  ];
+  const base = D.map(d=>({
+    id:uid(), number:d[0], name:d[1], furigana:d[2], nickname:"", position:d[3],
+    hometown:d[7], birthday:d[4], height:d[5], weight:d[6], foot:"",
+    favorite:"", motto:d[8], holiday:"", instagram:d[9], x:"", youtube:"", career:"", transfer:"", photos:[]
+  }));
+  return base.concat(newSignings());
+}
+function newSignings(){
+  // 出典: 栃木SC公式 加入リリース（背番号未定のため0=「00」表示／移籍区分つき）
+  const N = [
+    ["東 廉太","ひがし れんた","DF","2004-06-17","190cm","84kg","山口県","育成型","前所属：ＦＣ東京"],
+    ["名願 斗哉","みょうがん とうや","MF","2004-06-29","178cm","70kg","大阪府","育成型","前所属：川崎フロンターレ"],
+    ["大迫 塁","おおさこ るい","MF","2004-10-13","177cm","69kg","鹿児島県","完全移籍","前所属：セレッソ大阪"],
+    ["鈴木 輪太朗 イブラヒーム","すずき わでぃ いぶらひーむ","FW","2003-01-31","192cm","85kg","神奈川県","完全移籍","前所属：徳島ヴォルティス"],
+    ["松下 佳貴","まつした よしき","MF","1994-03-03","174cm","67kg","愛媛県","完全移籍","前所属：藤枝ＭＹＦＣ"],
+    ["世瀬 啓人","せせ ひろと","MF","1999-08-20","182cm","73kg","鳥取県","期限付き","前所属：藤枝ＭＹＦＣ"],
+  ];
+  return N.map(d=>({
+    id:uid(), number:0, name:d[0], furigana:d[1], nickname:"", position:d[2],
+    hometown:d[6], birthday:d[3], height:d[4], weight:d[5], foot:"",
+    favorite:"", motto:"", holiday:"", instagram:"", x:"", youtube:"", career:d[8], transfer:d[7], photos:[]
+  }));
+}
+function seed(){ return officialRoster(); }
+
+/* ---------- render board ---------- */
+function render(){
+  document.body.classList.toggle("admin", admin);
+  $("#adminflag").classList.toggle("on", admin);
+  $("#adminbtns").classList.toggle("on", admin);
+  $("#count").textContent = `登録選手 ${players.length}名`;
+
+  if(players.length===0){
+    board.innerHTML = `<div class="empty"><b>選手がまだ登録されていません</b>${admin?"右上の「＋ 選手を追加」から登録できます。":"ロゴを5秒長押しして管理モードに入ると登録できます。"}</div>`;
+    return;
+  }
+  view==="position" ? renderPosition() : renderNumber();
+}
+
+function renderPosition(){
+  $("#seg").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.view==="position"));
+  let html = "";
+  POS.forEach(pos=>{
+    const list = players.filter(p=>p.position===pos).sort((a,b)=>a.number-b.number);
+    if(list.length===0) return;
+    html += `<section class="acc ${openAcc[pos]?"open":""}" data-pos="${pos}">
+      <button class="acc-head" data-acc="${pos}">
+        <span class="pos-chip" style="background:${POS_VAR[pos]}">${pos}</span>
+        <span class="nm">${POS_NAME[pos]}</span>
+        <span class="ct">${list.length}名</span>
+        <span class="caret">▽</span>
+      </button>
+      <div class="acc-body"><div class="grid">${list.map(p=>card(p,false)).join("")}</div></div>
+    </section>`;
+  });
+  board.innerHTML = html || `<div class="empty"><b>表示できる選手がいません</b></div>`;
+}
+
+function renderNumber(){
+  $("#seg").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.view==="number"));
+  // 背番号昇順・欠番は詰めて（空きを作らず連続表示）
+  const list = [...players].sort((a,b)=>a.number-b.number);
+  board.innerHTML = `<div class="grid flat">${list.map(p=>card(p,true)).join("")}</div>`;
+}
+
+function card(p, showPos){
+  const src = (Array.isArray(p.photos) && p.photos[0]) || p.thumb || p.photo || "";
+  const img = src
+    ? `<img src="${esc(src)}" alt="${esc(p.name)}" loading="lazy">`
+    : `<div class="silh">👤</div>`;
+  const newTag = p.newcomer ? `<span class="newtag">NEW</span>` : "";
+  const badge = showPos
+    ? `<span class="tag" style="background:${POS_VAR[p.position]}">${p.position}</span>` : "";
+  const tl = (newTag||badge) ? `<span class="tl">${newTag}${badge}</span>` : "";
+  const t = TRANSFER[p.transfer];
+  const ttag = t ? `<span class="ttag" style="background:${t.color}" title="${t.label}">${t.ab}</span>` : "";
+  return `<button class="pcard" data-id="${p.id}">
+    <span class="del" data-del="${p.id}" title="削除">×</span>
+    <span class="photo">${img}${tl}<span class="num">${esc(numDisp(p.number))}</span>${ttag}</span>
+    <span class="meta"><span class="nme">${esc(p.name)}</span><span class="fg">${esc(p.furigana)}</span></span>
+  </button>`;
+}
+
+/* ---------- profile ---------- */
+async function openProfile(id){
+  const p = players.find(x=>x.id===id); if(!p) return;
+  showScrim();
+  sheet.innerHTML = `<div class="pf-hero"><div class="pf-top"><button class="x" data-close>×</button></div></div><div class="loading">読み込み中…</div>`;
+  const photos = await loadPhotos(id);
+  const r = (k,v)=>`<div class="row"><div class="k">${k}</div><div class="v ${v?"":"empty-v"}">${v?esc(v):"未登録"}</div></div>`;
+  const posRow = `<div class="row"><div class="k">ポジション</div><div class="v">${p.position}・${POS_NAME[p.position]}</div></div>`;
+  const snsLink = (cls,label,ic,url)=> url
+    ? `<a class="${cls}" href="${esc(url)}" target="_blank" rel="noopener"><span class="ic">${ic}</span>${label}</a>` : "";
+  const snsHtml = [snsLink("ig","Instagram","◎",p.instagram),snsLink("x","X","X",p.x),snsLink("yt","YouTube","▶",p.youtube)].join("");
+  const mainSrc = photos[0] || "";
+  const mainImg = mainSrc ? `<img id="pfMainImg" src="${esc(mainSrc)}" alt="">` : `<div class="silh">👤</div>`;
+  const newTag = p.newcomer ? `<span class="newtag">NEW</span>` : "";
+  const tt = TRANSFER[p.transfer];
+  const transChip = tt ? `<span class="pf-trans" style="background:${tt.color}">${tt.label}</span>` : "";
+  const thumbs = photos.length>1
+    ? `<div class="pf-thumbs">${photos.map((u,i)=>`<button class="pf-thumb ${i===0?"active":""}" data-thumb="${esc(u)}"><img src="${esc(u)}" alt=""></button>`).join("")}</div>`
+    : "";
+  sheet.innerHTML = `
+    <div class="pf-hero">
+      <div class="pf-top">
+        <button class="ed" data-edit="${p.id}">編集</button>
+        <button class="x" data-close>×</button>
+      </div>
+      <div class="pf-id">
+        <div class="pf-gallery">
+          <div class="pf-main">${newTag}${mainImg}</div>
+          ${thumbs}
+        </div>
+        <div class="pf-head">
+          <div class="pf-row1">
+            <span class="pfpos" style="background:${POS_VAR[p.position]}">${p.position}・${POS_NAME[p.position]}</span>
+            <span class="pfnum">${esc(numDisp(p.number))}</span>
+            <span class="pf-nm"><span class="pfname">${esc(p.name)}</span><span class="pffg">${esc(p.furigana)}</span></span>
+            ${transChip}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pf-body">
+      <div class="sect"><h3>プロフィール</h3><div class="rows">
+        ${r("背番号",numDisp(p.number))}${posRow}${tt?r("移籍区分",tt.label):""}${r("名前",p.name)}${r("ふりがな",p.furigana)}${r("あだ名",p.nickname)}
+        ${r("生年月日",p.birthday)}${r("身長",p.height)}${r("体重",p.weight)}${r("出身地",p.hometown)}${r("利き足",p.foot)}
+      </div></div>
+      <div class="sect"><h3>パーソナル</h3><div class="rows">
+        ${r("好きなもの",p.favorite)}${r("好きな言葉",p.motto)}${r("休日の過ごし方",p.holiday)}
+      </div></div>
+      <div class="sect"><h3>経歴</h3><div class="rows">${r("前所属チーム・経歴",p.career)}</div></div>
+      <div class="sect"><h3>SNS</h3><div class="sns">${snsHtml || '<span class="none">登録なし</span>'}</div></div>
+    </div>`;
+  sheet.scrollTop = 0; scrim.scrollTop = 0;
+}
+
+/* ---------- edit / add form ---------- */
+async function openForm(id){
+  const isNew = !id;
+  const p = isNew
+    ? {id:uid(),number:"",name:"",furigana:"",nickname:"",position:"FW",newcomer:false,transfer:"",hometown:"",birthday:"",height:"",weight:"",foot:"",favorite:"",motto:"",holiday:"",instagram:"",x:"",youtube:"",career:""}
+    : {...players.find(x=>x.id===id)};
+  formPhotos = isNew ? [] : await loadPhotos(id);
+  formTransfer = p.transfer || "";
+  const opt = POS.map(o=>`<option value="${o}" ${p.position===o?"selected":""}>${o}・${POS_NAME[o]}</option>`).join("");
+  const F = (id,label,val,type="text",ph="")=>`<div class="fg"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(val)}" placeholder="${ph}"></div>`;
+  sheet.innerHTML = `
+    <div class="form">
+      <div class="ftop"><h2>${isNew?"選手を追加":"選手を編集"}</h2><button class="x" data-close>×</button></div>
+      <div class="bulk" id="bulkBox">
+        <button type="button" class="bulk-toggle" id="bulkToggle">📋 一括コピペで入力<span class="car">▾</span></button>
+        <div class="bulk-body">
+          <textarea id="bulkText" placeholder="「ラベル: 値」を1行ずつ貼り付け\n例）\n背番号: 10\n名前: 田中 太郎\nふりがな: たなか たろう\nポジション: MF\n経歴: ○○SC\n2024 栃木SC加入"></textarea>
+          <div class="bulk-actions">
+            <button type="button" class="btn small" id="bulkTpl">テンプレート挿入</button>
+            <button type="button" class="btn primary small" id="bulkApply">貼り付けから自動入力</button>
+          </div>
+          <div class="hint">対応ラベル：背番号 / 名前 / ふりがな / あだ名 / ポジション(GK・DF・MF・FW) / 生年月日 / 身長 / 体重 / 出身地 / 利き足 / 好きなもの / 好きな言葉 / 休日の過ごし方 / Instagram / X / YouTube / 経歴。区切りは「：」「: 」「タブ」に対応。自動入力後、内容を確認して「保存する」を押してください。</div>
+        </div>
+      </div>
+      <div class="fg"><label>写真（最大4枚・左端が一覧/メイン表示）</label>
+        <div class="photogrid" id="photogrid"></div>
+        <div class="photo-add">
+          <label class="filebtn">＋ 画像を追加<input id="file" type="file" accept="image/*" multiple hidden></label>
+          <input id="urladd" type="text" placeholder="画像URLを追加">
+          <button type="button" class="btn small" id="urladdbtn">URL追加</button>
+        </div>
+        <div class="hint">アップロード画像は画質を保ちつつ自動で縮小・圧縮します。「★」で1枚目（メイン）に変更、「×」で削除。</div>
+      </div>
+      <div class="fg">
+        <label class="checkrow"><input type="checkbox" id="f_newcomer" ${p.newcomer?"checked":""}> <span>新加入</span> <span class="nt">NEW</span> <span style="font-weight:400;color:var(--muted);font-size:12px">写真左上にNEWアイコンを表示</span></label>
+      </div>
+      <div class="fg">
+        <label>移籍区分（選択すると1P写真にアイコン・2Pにラベル表示／再タップで解除）</label>
+        <div class="trans-chips" id="transChips">
+          ${TRANSFER_KEYS.map(k=>`<button type="button" class="trans-chip ${p.transfer===k?"on":""}" data-transfer="${k}" style="${p.transfer===k?`background:${TRANSFER[k].color};border-color:transparent;color:#fff`:""}">${TRANSFER[k].label}</button>`).join("")}
+        </div>
+      </div>
+      <div class="grid2">
+        ${F("f_number","背番号",p.number,"number","例: 10")}
+        <div class="fg"><label for="f_position">ポジション</label><select id="f_position">${opt}</select></div>
+      </div>
+      ${F("f_name","名前",p.name,"text","例: 山田 太郎")}
+      ${F("f_furigana","ふりがな",p.furigana,"text","例: やまだ たろう")}
+      ${F("f_nickname","あだ名",p.nickname,"text","例: タロー")}
+      <div class="grid2">
+        ${F("f_birthday","生年月日",p.birthday,"text","例: 2000-04-01")}
+        ${F("f_foot","利き足",p.foot,"text","右 / 左 / 両足")}
+      </div>
+      <div class="grid2">
+        ${F("f_height","身長",p.height,"text","例: 180cm")}
+        ${F("f_weight","体重",p.weight,"text","例: 74kg")}
+      </div>
+      ${F("f_hometown","出身地",p.hometown,"text","例: 栃木県宇都宮市")}
+      ${F("f_favorite","好きなもの",p.favorite)}
+      ${F("f_motto","好きな言葉",p.motto)}
+      ${F("f_holiday","休日の過ごし方",p.holiday)}
+      <div class="fg"><label for="f_career">前所属チーム・経歴</label><textarea id="f_career" placeholder="改行で複数行入力できます">${esc(p.career)}</textarea></div>
+      <div class="fg"><label for="f_instagram">Instagram URL</label><input id="f_instagram" type="text" value="${esc(p.instagram)}" placeholder="https://instagram.com/..."></div>
+      <div class="grid2">
+        ${F("f_x","X URL",p.x,"text","https://x.com/...")}
+        ${F("f_youtube","YouTube URL",p.youtube,"text","https://youtube.com/...")}
+      </div>
+      <div class="save-bar">
+        <button class="btn" data-close>キャンセル</button>
+        <button class="btn primary" id="saveBtn" data-pid="${p.id}" data-new="${isNew}">保存する</button>
+      </div>
+    </div>`;
+  showScrim();
+  renderPhotoGrid();
+
+  // multi-photo controls
+  $("#file").addEventListener("change", async e=>{
+    const files = [...e.target.files];
+    for(const f of files){
+      if(formPhotos.length>=4){ toast("写真は最大4枚までです"); break; }
+      try{ formPhotos.push(await resizeImage(f, 1000, 0.82)); renderPhotoGrid(); }
+      catch(_){ toast("画像を読み込めませんでした"); }
+    }
+    e.target.value = "";
+  });
+  $("#urladdbtn").addEventListener("click", ()=>{
+    const v = $("#urladd").value.trim(); if(!v) return;
+    if(formPhotos.length>=4){ toast("写真は最大4枚までです"); return; }
+    formPhotos.push(v); $("#urladd").value=""; renderPhotoGrid();
+  });
+  $("#photogrid").addEventListener("click", e=>{
+    const d = e.target.closest("[data-phdel]");
+    if(d){ formPhotos.splice(+d.dataset.phdel,1); renderPhotoGrid(); return; }
+    const s = e.target.closest("[data-star]");
+    if(s){ const i=+s.dataset.star; const [m]=formPhotos.splice(i,1); formPhotos.unshift(m); renderPhotoGrid(); return; }
+  });
+  $("#transChips").addEventListener("click", e=>{
+    const c = e.target.closest("[data-transfer]"); if(!c) return;
+    const k = c.dataset.transfer;
+    formTransfer = (formTransfer===k) ? "" : k;
+    $("#transChips").querySelectorAll(".trans-chip").forEach(ch=>{
+      const on = ch.dataset.transfer===formTransfer;
+      ch.classList.toggle("on", on);
+      ch.style.cssText = on ? `background:${TRANSFER[ch.dataset.transfer].color};border-color:transparent;color:#fff` : "";
+    });
+  });
+
+  // bulk paste controls
+  $("#bulkToggle").addEventListener("click", ()=>$("#bulkBox").classList.toggle("collapsed"));
+  $("#bulkTpl").addEventListener("click", ()=>{
+    const t=$("#bulkText");
+    if(!t.value.trim()) t.value=BULK_TEMPLATE;
+    t.focus();
+  });
+  $("#bulkApply").addEventListener("click", applyBulk);
+}
+
+function renderPhotoGrid(){
+  const g = $("#photogrid"); if(!g) return;
+  if(formPhotos.length===0){ g.innerHTML = `<div class="ph-empty">写真未登録</div>`; return; }
+  g.innerHTML = formPhotos.map((u,i)=>`
+    <div class="ph-slot">
+      <img src="${esc(u)}" alt="">
+      ${i===0 ? `<span class="ph-main">1枚目</span>` : `<button type="button" class="ph-star" data-star="${i}" title="1枚目にする">★</button>`}
+      <button type="button" class="ph-del" data-phdel="${i}" title="削除">×</button>
+    </div>`).join("");
+}
+
+function resizeImage(file, maxW, q){
+  return new Promise((res,rej)=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const im = new Image();
+      im.onload = ()=>{
+        const scale = Math.min(1, maxW/im.width);
+        const w = Math.round(im.width*scale), h = Math.round(im.height*scale);
+        const c = document.createElement("canvas"); c.width=w; c.height=h;
+        c.getContext("2d").drawImage(im,0,0,w,h);
+        res(c.toDataURL("image/jpeg",q));
+      };
+      im.onerror = rej; im.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+
+async function saveForm(pid, isNew){
+  const val = id => $("#f_"+id).value.trim();
+  const numRaw = val("number");
+  const num = numRaw===""?0:parseInt(numRaw,10);
+  if(!val("name")){ toast("名前を入力してください"); return; }
+  const photos = formPhotos.slice(0,4);
+  const obj = {
+    id:pid, number:isNaN(num)?0:num, name:val("name"), furigana:val("furigana"),
+    nickname:val("nickname"), position:val("position")||"FW", photos:photos,
+    newcomer: $("#f_newcomer").checked, transfer: formTransfer,
+    hometown:val("hometown"), birthday:val("birthday"), height:val("height"), weight:val("weight"),
+    foot:val("foot"), favorite:val("favorite"), motto:val("motto"), holiday:val("holiday"),
+    instagram:val("instagram"), x:val("x"), youtube:val("youtube"), career:val("career"),
+  };
+  if(isNew==="true"||isNew===true){ players.push(obj); }
+  else { const i = players.findIndex(p=>p.id===pid); if(i>=0) players[i]=obj; }
+  save(); closeScrim(); render(); toast("保存しました（公開するには『データを書き出す』）");
+}
+
+function del(id){
+  const p = players.find(x=>x.id===id); if(!p) return;
+  if(!confirm(`「${p.name}」を削除しますか？`)) return;
+  players = players.filter(x=>x.id!==id);
+  save(); render(); toast("削除しました");
+}
+
+/* ---------- overlay helpers ---------- */
+function showScrim(){ scrim.classList.add("show"); sheet.scrollTop=0; scrim.scrollTop=0; }
+function closeScrim(){ scrim.classList.remove("show"); sheet.innerHTML=""; }
+
+/* ---------- events (delegated) ---------- */
+board.addEventListener("click", e=>{
+  const delEl = e.target.closest("[data-del]");
+  if(delEl){ e.stopPropagation(); del(delEl.dataset.del); return; }
+  const accEl = e.target.closest("[data-acc]");
+  if(accEl){ const k=accEl.dataset.acc; openAcc[k]=!openAcc[k]; accEl.closest(".acc").classList.toggle("open",openAcc[k]); return; }
+  const cardEl = e.target.closest("[data-id]");
+  if(cardEl){ openProfile(cardEl.dataset.id); }
+});
+scrim.addEventListener("click", e=>{
+  if(e.target===scrim){ closeScrim(); return; }
+  if(e.target.closest("[data-close]")){ closeScrim(); return; }
+  const th = e.target.closest("[data-thumb]");
+  if(th){
+    const img = $("#pfMainImg"); if(img) img.src = th.dataset.thumb;
+    sheet.querySelectorAll(".pf-thumb").forEach(t=>t.classList.remove("active"));
+    th.classList.add("active"); return;
+  }
+  const ed = e.target.closest("[data-edit]"); if(ed){ openForm(ed.dataset.edit); return; }
+  const sv = e.target.closest("#saveBtn"); if(sv){ saveForm(sv.dataset.pid, sv.dataset.new); return; }
+});
+$("#seg").addEventListener("click", e=>{
+  const b = e.target.closest("button[data-view]"); if(!b) return;
+  view = b.dataset.view; render();
+});
+$("#addBtn").addEventListener("click", ()=>openForm(null));
+$("#loadOfficialBtn").addEventListener("click", ()=>{
+  if(!confirm("現在の選手をすべて置き換えて、内蔵の2026/27選手データ（35名）を読み込みます。よろしいですか？")) return;
+  players = officialRoster(); save(); render(); toast("内蔵の選手データを読み込みました");
+});
+$("#exportBtn").addEventListener("click", exportData);
+$("#discardBtn").addEventListener("click", discardLocal);
+$("#lockBtn").addEventListener("click", ()=>{ admin=false; render(); toast("管理モードを終了しました"); });
+
+/* ---------- logo long-press -> password ---------- */
+const logo = $("#logo"); let pressTimer=null;
+function startPress(){ if(admin) return; logo.classList.add("holding"); pressTimer=setTimeout(openPw,5000); }
+function endPress(){ logo.classList.remove("holding"); clearTimeout(pressTimer); }
+logo.addEventListener("mousedown", startPress);
+logo.addEventListener("touchstart", e=>{ startPress(); }, {passive:true});
+["mouseup","mouseleave","touchend","touchcancel"].forEach(ev=>logo.addEventListener(ev, endPress));
+
+const pwwrap=$("#pwwrap"), pwinput=$("#pwinput"), pwerr=$("#pwerr");
+function openPw(){ endPress(); pwwrap.classList.add("show"); pwinput.value=""; pwerr.textContent=""; setTimeout(()=>pwinput.focus(),50); }
+function closePw(){ pwwrap.classList.remove("show"); }
+function tryPw(){
+  if(pwinput.value===PASSWORD){ admin=true; closePw(); render(); toast("管理モードに入りました"); }
+  else { pwerr.textContent="パスワードが違います"; pwinput.value=""; pwinput.focus(); }
+}
+$("#pwok").addEventListener("click", tryPw);
+$("#pwcancel").addEventListener("click", closePw);
+pwinput.addEventListener("keydown", e=>{ if(e.key==="Enter") tryPw(); });
+pwwrap.addEventListener("click", e=>{ if(e.target===pwwrap) closePw(); });
+
+/* esc closes */
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeScrim(); closePw(); } });
+
+/* toast */
+let tT=null;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove("show"),2200); }
+
+load();
+</script>
